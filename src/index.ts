@@ -22,7 +22,7 @@ import { createServer } from 'http';
 import mergeDeep from 'merge-deep';
 import process from 'process';
 import { Server as Socket } from 'socket.io';
-
+import { verifyTokenSocket } from './middleware/auth';
 import { version } from '../package.json';
 import config from './config';
 import { convert } from './mapper/index';
@@ -100,11 +100,16 @@ export function initServer(serverOptions: any) {
     },
   });
 
+  io.use(verifyTokenSocket);
   io.on('connection', (sock) => {
     logger.info(`ID: ${sock.id} entrou`);
 
     sock.on('disconnect', () => {
-      logger.info(`ID: ${sock.id} saiu`);
+      logger.info(
+        `ID: ${sock.id} has disconnected. Session: ${
+          sock.handshake.auth?.session || 'Unknown'
+        }`
+      );
     });
   });
 
