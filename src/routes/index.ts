@@ -35,6 +35,7 @@ import * as HealthCheck from '../middleware/healthCheck';
 import * as prometheusRegister from '../middleware/instrumentation';
 import statusConnection from '../middleware/statusConnection';
 import swaggerDocument from '../swagger.json';
+import * as socketController from '../controller/socketsController';
 
 const upload = multer(uploadConfig as any);
 const routes = Router();
@@ -101,7 +102,13 @@ routes.post(
   statusConnection,
   SessionController.downloadMediaByMessage
 );
-
+// Sockets
+routes.post(
+  '/api/:session/send-socket',
+  verifyToken,
+  statusConnection,
+  socketController.emitSocket
+);
 // Messages
 routes.post(
   '/api/:session/send-message',
