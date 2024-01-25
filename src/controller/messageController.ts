@@ -16,7 +16,8 @@
 
 import { Request, Response } from 'express';
 
-import { unlinkAsync } from '../util/functions';
+//import { unlinkAsync } from '../util/functions';
+import { callSocket, unlinkAsync } from '../util/functions';
 
 function returnError(req: Request, res: Response, error: any) {
   req.logger.error(error);
@@ -88,7 +89,8 @@ export async function sendMessage(req: Request, res: Response) {
 
     if (results.length === 0)
       return res.status(400).json('Error sending message');
-    req.io.emit('mensagem-enviada', results);
+
+    callSocket(req, ['mensagem-enviada', 'sent-message'], results);
     returnSucess(res, results);
   } catch (error) {
     returnError(req, res, error);
@@ -135,7 +137,9 @@ export async function editMessage(req: Request, res: Response) {
   try {
     const edited = await (req.client as any).editMessage(id, newText, options);
 
-    req.io.emit('edited-message', edited);
+    callSocket(req, ['mensagem-editada', 'edited-message'], {
+      edited,
+    });
     returnSucess(res, edited);
   } catch (error) {
     returnError(req, res, error);
@@ -678,7 +682,11 @@ export async function sendOrderMessage(req: Request, res: Response) {
 
     if (results.length === 0)
       return res.status(400).json('Error sending order message');
-    req.io.emit('mensagem-enviada', results);
+
+    callSocket(req, ['mensagem-enviada', 'sent-message'], {
+      message: results,
+      to: phone,
+    });
     returnSucess(res, results);
   } catch (error) {
     returnError(req, res, error);
@@ -845,7 +853,11 @@ export async function replyMessage(req: Request, res: Response) {
 
     if (results.length === 0)
       return res.status(400).json('Error sending message');
-    req.io.emit('mensagem-enviada', { message: message, to: phone });
+
+    callSocket(req, ['mensagem-enviada', 'sent-message'], {
+      message: message,
+      to: phone,
+    });
     returnSucess(res, results);
   } catch (error) {
     returnError(req, res, error);

@@ -43,6 +43,19 @@ if (config?.websocket?.uploadS3) {
   crypto = config.websocket.uploadS3 ? Crypto : null;
 }
 
+export function callSocket(req: any, event: string | string[], data: any) {
+  event = Array.isArray(event) ? event : [event];
+  const session = req?.session || data?.session;
+
+  const listeners = req.io?.sockets?.adapter?.rooms?.get(session)?.size || 0;
+
+  if (listeners == 0) return;
+  for (const evt of event) {
+    req.io.to(session).emit(evt, data);
+  }
+  return;
+}
+
 export function contactToArray(
   number: any,
   isGroup?: boolean,
