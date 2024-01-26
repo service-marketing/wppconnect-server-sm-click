@@ -2,7 +2,7 @@ export default {
   secretKey: 'SM-API-SECRET-KEY',
   host: 'http://localhost',
   port: '21465',
-  deviceName: 'SM CLICK - TESTES',
+  deviceName: 'SM CLICK',
   poweredBy: 'SM CLICK',
   startAllSession: true,
   tokenStoreType: 'file',
