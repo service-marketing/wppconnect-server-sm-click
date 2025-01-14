@@ -73,7 +73,7 @@ export const verifyTokenSocket = (socket: Socket, next: any) => {
   }
 };
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+const verifyToken = (req: Request, res: Response, next: NextFunction): any => {
   const secureToken = req.serverOptions.secretKey;
 
   const { session } = req.params;
