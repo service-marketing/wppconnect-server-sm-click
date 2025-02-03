@@ -347,7 +347,6 @@ export default class CreateSessionUtil {
   async onRevokedMessage(client: WhatsAppServer, req: Request) {
     await client.isConnected();
     await client.onRevokedMessage(async (response: any) => {
-      console.log(response)
       callSocket(req, 'onrevokedmessage', response);
       callWebHook(client, req, 'onrevokedmessage', response);
     });
