@@ -320,8 +320,12 @@ export default class CreateSessionUtil {
 
   async listenAcks(client: WhatsAppServer, req: Request) {
     await client.onAck(async (ack) => {
-      callSocket(req, 'onack', ack);
-      callWebHook(client, req, 'onack', ack);
+
+      // if para enviar somente Acks de mensagens editadas
+      if ( ack['latestEditMsgKey'] ) {
+        callSocket(req, 'onack', ack);
+        callWebHook(client, req, 'onack', ack);
+      }
     });
   }
 
