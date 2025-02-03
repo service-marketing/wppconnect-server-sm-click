@@ -320,8 +320,12 @@ export default class CreateSessionUtil {
 
   async listenAcks(client: WhatsAppServer, req: Request) {
     await client.onAck(async (ack) => {
-      callSocket(req, 'onack', ack);
-      callWebHook(client, req, 'onack', ack);
+
+      // if para enviar somente Acks de mensagens editadas
+      if ( ack['latestEditMsgKey'] ) {
+        callSocket(req, 'onack', ack);
+        callWebHook(client, req, 'onack', ack);
+      }
     });
   }
 
@@ -343,6 +347,7 @@ export default class CreateSessionUtil {
   async onRevokedMessage(client: WhatsAppServer, req: Request) {
     await client.isConnected();
     await client.onRevokedMessage(async (response: any) => {
+      console.log(response)
       callSocket(req, 'onrevokedmessage', response);
       callWebHook(client, req, 'onrevokedmessage', response);
     });
