@@ -97,6 +97,11 @@ routes.post(
   SessionController.subscribePresence
 );
 routes.post(
+  '/api/:session/set-online-presence',
+  verifyToken,
+  SessionController.setOnlinePresence
+);
+routes.post(
   '/api/:session/download-media',
   verifyToken,
   statusConnection,
