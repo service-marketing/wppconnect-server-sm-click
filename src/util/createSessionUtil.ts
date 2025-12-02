@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { create, SocketState } from '@wppconnect-team/wppconnect';
+import { create, SocketState, StatusFind } from '@wppconnect-team/wppconnect';
 import { Request } from 'express';
 
 import { download } from '../controller/sessionController';
@@ -108,7 +108,7 @@ export default class CreateSessionUtil {
             onLoadingScreen: (percent: string, message: string) => {
               req.logger.info(`[${session}] ${percent}% - ${message}`);
             },
-            statusFind: (statusFind: string) => {
+            statusFind: (statusFind: StatusFind) => {
               try {
                 eventEmitter.emit(
                   `status-${client.session}`,
@@ -116,8 +116,8 @@ export default class CreateSessionUtil {
                   statusFind
                 );
                 if (
-                  statusFind === 'autocloseCalled' ||
-                  statusFind === 'desconnectedMobile'
+                  statusFind === StatusFind.autocloseCalled ||
+                  statusFind === StatusFind.disconnectedMobile
                 ) {
                   client.status = 'CLOSED';
                   client.qrcode = null;
@@ -329,9 +329,8 @@ export default class CreateSessionUtil {
 
   async listenAcks(client: WhatsAppServer, req: Request) {
     await client.onAck(async (ack) => {
-
       // if para enviar somente Acks de mensagens editadas
-      if ( ack['latestEditMsgKey'] ) {
+      if (ack['latestEditMsgKey']) {
         callSocket(req, 'onack', ack);
         callWebHook(client, req, 'onack', ack);
       }
